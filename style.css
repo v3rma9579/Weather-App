@@ -170,8 +170,7 @@ body {
 
 .main nav {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
 }
 
 nav .options {
@@ -199,13 +198,15 @@ nav .units button {
       height: 40px;
       border-radius: 50%;
       color: rgb(97, 95, 95);
-      color: rgb(90, 43, 43);
-      background-color: #f7ee74;
+      color: black;
+      background-color: wheat;
 }
+
+
 
 .units button.active {
       color: #fff;
-      background-color: rgb(184, 25, 25);
+      background-color: rgb(184, 25, 86);
 }
 
 .main cards {
@@ -215,9 +216,15 @@ nav .units button {
       margin-top: 50px;
 }
 
+.cards {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+}
+
 .card {
-      width: 100px;
-      height: 130px;
+      width: 200px;
+      height: 150px;
       border-radius: 20px;
       color: #1a1a1a;
       background-color: #fff;

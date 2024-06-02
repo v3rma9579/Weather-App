@@ -6,14 +6,13 @@ const temp = document.getElementById("temp"),
   currentLocation = document.getElementById("loc"),
   windSpeed = document.querySelector(".wind-speed"),
   humidity = document.querySelector(".humidity"),
-  visibilty = document.querySelector(".visibilty"),
   humidityStatus = document.querySelector(".humidity-status"),
   airQuality = document.querySelector(".air-quality"),
   airQualityStatus = document.querySelector(".air-quality-status"),
   searchForm = document.querySelector("#search"),
   search = document.querySelector("#query"),
-  celciusBtn = document.querySelector(".celcius"),
-  fahrenheitBtn = document.querySelector(".fahrenheit"),
+  celciusBtn = document.querySelector("#celcius"),
+  fahrenheitBtn = document.querySelector("#fahrenheit"),
   tempUnit = document.querySelectorAll(".temp-unit"),
   hourlyBtn = document.querySelector(".hourly"),
   weekBtn = document.querySelector(".week"),
@@ -76,8 +75,9 @@ getPublicIp();
 
 // function to get weather data
 function getWeatherData(city, unit, hourlyorWeek) {
+  const apiKey = "TCE8D2SXXGPXAVMLMAQY5K326";
   fetch(
-    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=EJ6UBL2JEQGYB3AA4ENASN62J&contentType=json`,
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=${apiKey}&contentType=json`,
     {
       method: "GET",
       headers: {},
@@ -94,11 +94,10 @@ function getWeatherData(city, unit, hourlyorWeek) {
       currentLocation.innerText = data.resolvedAddress;
       condition.innerText = today.conditions;
       rain.innerText = "Perc - " + today.precip + "%";
-      uvIndex.innerText = today.uvindex;
       windSpeed.innerText = today.windspeed;
       mainIcon.src = getIcon(today.icon);
       changeBackground(today.icon);
-      humidity.innerText = today.humidity + "%";
+      humidity.innerText = today.humidity + " %";
       updateHumidityStatus(today.humidity);
       airQuality.innerText = today.winddir;
       updateAirQualityStatus(today.winddir);
@@ -110,9 +109,9 @@ function getWeatherData(city, unit, hourlyorWeek) {
       sunRise.innerText = covertTimeTo12HourFormat(today.sunrise);
       sunSet.innerText = covertTimeTo12HourFormat(today.sunset);
     })
-    .catch((err) => {
-      alert("City not found in our database");
-    });
+  // .catch((err) => {
+  //   alert("City not found in our database");
+  // });
 }
 
 //function to update Forecast
@@ -160,21 +159,21 @@ function updateForecast(data, unit, type) {
 // function to change weather icons
 function getIcon(condition) {
   if (condition === "partly-cloudy-day") {
-    return "https://i.ibb.co/PZQXH8V/27.png";
+    return "../assets/clear-sky.png";
   } else if (condition === "partly-cloudy-night") {
-    return "https://i.ibb.co/Kzkk59k/15.png";
+    return "./assets/partly-cloudy-night.svg";
   } else if (condition === "rain") {
-    return "https://i.ibb.co/kBd2NTS/39.png";
+    return "../assets/raining.png";
   } else if (condition === "clear-day") {
-    return "https://i.ibb.co/rb4rrJL/26.png";
+    return "../assets/sun.png";
   } else if (condition === "clear-night") {
-    return "https://i.ibb.co/1nxNGHL/10.png";
+    return "../assests/clear-night.png";
   } else {
-    return "https://i.ibb.co/rb4rrJL/26.png";
+    return "../assets/sun.png";
   }
 }
 
-// function to change background depending on weather conditions
+
 function changeBackground(condition) {
   const body = document.querySelector("body");
   let bg = "";
@@ -191,7 +190,10 @@ function changeBackground(condition) {
   } else {
     bg = "https://i.ibb.co/qNv7NxZ/pc.webp";
   }
-  body.style.backgroundImage = `linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),url(${bg})`;
+  body.style.backgroundImage = `linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),url(${bg})`
+  document.body.style.backgroundRepeat = 'no-repeat';
+  document.body.style.backgroundSize = 'cover';
+
 }
 
 //get hours from hh:mm:ss
@@ -234,22 +236,6 @@ function getDayName(date) {
   return days[day.getDay()];
 }
 
-// function to get uv index status
-function measureUvIndex(uvIndex) {
-  if (uvIndex <= 2) {
-    uvText.innerText = "Low";
-  } else if (uvIndex <= 5) {
-    uvText.innerText = "Moderate";
-  } else if (uvIndex <= 7) {
-    uvText.innerText = "High";
-  } else if (uvIndex <= 10) {
-    uvText.innerText = "Very High";
-  } else {
-    uvText.innerText = "Extreme";
-  }
-}
-
-// function to get humidity status
 function updateHumidityStatus(humidity) {
   if (humidity <= 30) {
     humidityStatus.innerText = "Low";
@@ -260,26 +246,7 @@ function updateHumidityStatus(humidity) {
   }
 }
 
-// function to get visibility status
-function updateVisibiltyStatus(visibility) {
-  if (visibility <= 0.03) {
-    visibilityStatus.innerText = "Dense Fog";
-  } else if (visibility <= 0.16) {
-    visibilityStatus.innerText = "Moderate Fog";
-  } else if (visibility <= 0.35) {
-    visibilityStatus.innerText = "Light Fog";
-  } else if (visibility <= 1.13) {
-    visibilityStatus.innerText = "Very Light Fog";
-  } else if (visibility <= 2.16) {
-    visibilityStatus.innerText = "Light Mist";
-  } else if (visibility <= 5.4) {
-    visibilityStatus.innerText = "Very Light Mist";
-  } else if (visibility <= 10.8) {
-    visibilityStatus.innerText = "Clear Air";
-  } else {
-    visibilityStatus.innerText = "Very Clear Air";
-  }
-}
+
 
 // function to get air quality status
 function updateAirQualityStatus(airquality) {
@@ -313,98 +280,6 @@ function celciusToFahrenheit(temp) {
   return ((temp * 9) / 5 + 32).toFixed(1);
 }
 
-
-var currentFocus;
-search.addEventListener("input", function (e) {
-  removeSuggestions();
-  var a,
-    b,
-    i,
-    val = this.value;
-  if (!val) {
-    return false;
-  }
-  currentFocus = -1;
-
-  a = document.createElement("ul");
-  a.setAttribute("id", "suggestions");
-
-  this.parentNode.appendChild(a);
-
-  for (i = 0; i < cities.length; i++) {
-    /*check if the item starts with the same letters as the text field value:*/
-    if (
-      cities[i].name.substr(0, val.length).toUpperCase() == val.toUpperCase()
-    ) {
-      /*create a li element for each matching element:*/
-      b = document.createElement("li");
-      /*make the matching letters bold:*/
-      b.innerHTML =
-        "<strong>" + cities[i].name.substr(0, val.length) + "</strong>";
-      b.innerHTML += cities[i].name.substr(val.length);
-      /*insert a input field that will hold the current array item's value:*/
-      b.innerHTML += "<input type='hidden' value='" + cities[i].name + "'>";
-      /*execute a function when someone clicks on the item value (DIV element):*/
-      b.addEventListener("click", function (e) {
-        /*insert the value for the autocomplete text field:*/
-        search.value = this.getElementsByTagName("input")[0].value;
-        removeSuggestions();
-      });
-
-      a.appendChild(b);
-    }
-  }
-});
-/*execute a function presses a key on the keyboard:*/
-search.addEventListener("keydown", function (e) {
-  var x = document.getElementById("suggestions");
-  if (x) x = x.getElementsByTagName("li");
-  if (e.keyCode == 40) {
-    /*If the arrow DOWN key
-      is pressed,
-      increase the currentFocus variable:*/
-    currentFocus++;
-    /*and and make the current item more visible:*/
-    addActive(x);
-  } else if (e.keyCode == 38) {
-    /*If the arrow UP key
-      is pressed,
-      decrease the currentFocus variable:*/
-    currentFocus--;
-    /*and and make the current item more visible:*/
-    addActive(x);
-  }
-  if (e.keyCode == 13) {
-    /*If the ENTER key is pressed, prevent the form from being submitted,*/
-    e.preventDefault();
-    if (currentFocus > -1) {
-      /*and simulate a click on the "active" item:*/
-      if (x) x[currentFocus].click();
-    }
-  }
-});
-function addActive(x) {
-  /*a function to classify an item as "active":*/
-  if (!x) return false;
-  /*start by removing the "active" class on all items:*/
-  removeActive(x);
-  if (currentFocus >= x.length) currentFocus = 0;
-  if (currentFocus < 0) currentFocus = x.length - 1;
-  /*add class "autocomplete-active":*/
-  x[currentFocus].classList.add("active");
-}
-function removeActive(x) {
-  /*a function to remove the "active" class from all autocomplete items:*/
-  for (var i = 0; i < x.length; i++) {
-    x[i].classList.remove("active");
-  }
-}
-
-function removeSuggestions() {
-  var x = document.getElementById("suggestions");
-  if (x) x.parentNode.removeChild(x);
-}
-
 fahrenheitBtn.addEventListener("click", () => {
   changeUnit("f");
 });
@@ -430,26 +305,26 @@ function changeUnit(unit) {
   }
 }
 
-hourlyBtn.addEventListener("click", () => {
-  changeTimeSpan("hourly");
-});
-weekBtn.addEventListener("click", () => {
-  changeTimeSpan("week");
-});
+// hourlyBtn.addEventListener("click", () => {
+//   changeTimeSpan("hourly");
+// });
+// weekBtn.addEventListener("click", () => {
+//   changeTimeSpan("week");
+// });
 
 // function to change hourly to weekly or vice versa
-function changeTimeSpan(unit) {
-  if (hourlyorWeek !== unit) {
-    hourlyorWeek = unit;
-    if (unit === "hourly") {
-      hourlyBtn.classList.add("active");
-      weekBtn.classList.remove("active");
-    } else {
-      hourlyBtn.classList.remove("active");
-      weekBtn.classList.add("active");
-    }
-    getWeatherData(currentCity, currentUnit, hourlyorWeek);
-  }
-}
+// function changeTimeSpan(unit) {
+//   if (hourlyorWeek !== unit) {
+//     hourlyorWeek = unit;
+//     if (unit === "hourly") {
+//       hourlyBtn.classList.add("active");
+//       weekBtn.classList.remove("active");
+//     } else {
+//       hourlyBtn.classList.remove("active");
+//       weekBtn.classList.add("active");
+//     }
+//     getWeatherData(currentCity, currentUnit, hourlyorWeek);
+//   }
+// }
 
 
